@@ -1,0 +1,14 @@
+{
+  "extends": "@adonisjs/tsconfig/tsconfig.app.json",
+  "isolatedModules": true,
+  "declaration": false,
+  "outDir": "./build",
+  "esModuleInterop": true,
+  "experimentalDecorators": true,
+  "emitDecoratorMetadata": true,
+  "skipLibCheck": true,
+  "compilerOptions": {
+    "rootDir": "./",
+    "outDir": "./build"
+  }
+}
