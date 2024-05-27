@@ -7,6 +7,7 @@
 |
 */
 
+const UsersController = () => import('#controllers/users_controller')
 import router from '@adonisjs/core/services/router'
 
 router.get('/', async () => {
@@ -14,3 +15,13 @@ router.get('/', async () => {
     hello: 'world',
   }
 })
+
+router
+  .group(() => {
+    router.post('/', [UsersController, 'createUser'])
+    router.get('/', [UsersController, 'getAllUsers'])
+    router.get('/:id', [UsersController, 'getUser'])
+    router.put('/:id', [UsersController, 'updateUser'])
+    router.delete('/:id', [UsersController, 'deleteUser'])
+  })
+  .prefix('api/v1/users')
