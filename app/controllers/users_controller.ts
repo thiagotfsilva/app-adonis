@@ -9,6 +9,12 @@ import { inject } from '@adonisjs/core'
 export default class UsersController {
   constructor(protected userService: UserService) {}
 
+  /**
+   *
+   * @createUser
+   * @requestBody {"fullName": "string","password": "string", "email": "string","phoneNumber": "string"}
+   *
+   */
   async createUser({ request, response }: HttpContext) {
     const data = request.body() as User
     const user = await this.userService.create(data)
@@ -26,6 +32,13 @@ export default class UsersController {
     return response.json(user)
   }
 
+  /**
+   *
+   * @updateUser
+   * @paramPath id - The ID of the source - @type(number) @required
+   * @requestBody {"fullName": "string","password": "string", "phoneNumber": "string"}
+   *
+   */
   async updateUser({ request, response }: HttpContext) {
     const { id } = request.params()
     const data = request.body() as User

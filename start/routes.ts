@@ -9,17 +9,12 @@
 
 const UsersController = () => import('#controllers/users_controller')
 const AuthController = () => import('#controllers/auth_controller')
-
+import AutoSwagger from 'adonis-autoswagger'
+import swagger from '#config/swagger'
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 
-router.get('/', async () => {
-  return {
-    hello: 'world',
-  }
-})
-
-router.post('/login', [AuthController, 'login'])
+router.post('/login', [AuthController, 'login']).prefix('api/v1')
 router.post('/register', [UsersController, 'createUser']).prefix('api/v1/users')
 
 router
@@ -35,3 +30,17 @@ router
       guards: ['api'],
     })
   )
+
+// returns swagger in YAML
+router.get('/swagger', async () => {
+  return AutoSwagger.default.docs(router.toJSON(), swagger)
+})
+
+// Renders Swagger-UI and passes YAML-output of /swagger
+router
+  .get('/docs', async () => {
+    return AutoSwagger.default.ui('/swagger', swagger)
+    // return AutoSwagger.default.scalar("/swagger", swagger); to use Scalar instead
+    // return AutoSwagger.default.rapidoc("/swagger", swagger); to use RapiDoc instead
+  })
+  .prefix('api/v1')
