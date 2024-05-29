@@ -12,7 +12,7 @@
 
 `docker logs app-api`
 
-## Para iniciar o ambiente
+## Acessar documentação da api
 
 `http://localhost:3333/api/v1/docs`
 
