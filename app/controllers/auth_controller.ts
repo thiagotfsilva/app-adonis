@@ -7,6 +7,12 @@ import User from '#models/user'
 export default class AuthController {
   constructor(protected userRepository: UserRespository) {}
 
+  /**
+   *
+   * @login
+   * @requestBody {"password": "string", "email": "string"}
+   *
+   */
   async login({ request, response }: HttpContext) {
     const { email, password } = request.only(['email', 'password'])
     const user = await User.verifyCredentials(email, password)
