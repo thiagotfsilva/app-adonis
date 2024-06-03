@@ -13,6 +13,17 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: ghcr.io/thiagotfsilva/adonis-app:latest
+      TZ: ${{ secrets.TZ }}
+      PORT: ${{ secrets.PORT }}
+      HOST: ${{ secrets.HOST }}
+      LOG_LEVEL: ${{ secrets.HOST }}
+      APP_KEY: ${{ secrets.APP_KEY }}
+      NODE_ENV: ${{ secrets.NODE_ENV }}
+      DB_HOST: localhost
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_DATABASE: my_database
     steps:
       - uses: actions/checkout@v3
       - name: Build and push image

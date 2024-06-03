@@ -10,8 +10,6 @@ COPY . .
 
 RUN npm run build
 
-RUN cp .env build/
-
 WORKDIR /app/build
 
 RUN npm ci --omit=dev
