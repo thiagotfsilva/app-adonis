@@ -8,8 +8,12 @@ RUN npm install
 
 COPY . .
 
-ENV PORT 3333
+RUN npm run build
 
-EXPOSE ${PORT}
+WORKDIR /app/build
 
-CMD [ "npm", "run", "dev" ]
+RUN npm ci --omit=dev
+
+EXPOSE 3333
+
+CMD [ "node", "bin/server.js" ]

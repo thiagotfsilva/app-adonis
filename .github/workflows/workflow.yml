@@ -1,0 +1,44 @@
+name: Workflow treinamento Areopagus
+
+on:
+  push:
+    branches:
+      - main
+      - feature/trein-2/trein-31/create-pipeline-staget-tests-build-migration
+  pull_request:
+    branches:
+      - main
+jobs:
+  build_and_publish:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ghcr.io/thiagotfsilva/adonis-app:latest
+      TZ: ${{ secrets.TZ }}
+      PORT: ${{ secrets.PORT }}
+      HOST: ${{ secrets.HOST }}
+      LOG_LEVEL: ${{ secrets.HOST }}
+      APP_KEY: ${{ secrets.APP_KEY }}
+      NODE_ENV: ${{ secrets.NODE_ENV }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_DATABASE: ${{ secrets.DB_DATABASE }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login to Github Registrey
+        if: success()
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: thiagotfsilva
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build image api
+        run: docker build -t ${{ env.IMAGE_NAME }} .
+      - name: Publish image api
+        run: docker push ${{ env.IMAGE_NAME }}
+      - name: Up Image
+        run: docker run -d -p 3333:3333 --name app-container ${{ env.IMAGE_NAME }}
