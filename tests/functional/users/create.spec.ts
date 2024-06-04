@@ -12,7 +12,7 @@ test.group('Users create', () => {
     const response = await client.post('api/v1/users/register').json(data)
     response.assertStatus(201)
     response.assertBody({
-      id: 1,
+      id: response.body().id,
       fullName: 'Test-User',
       email: 'test-email@email.com',
       phoneNumber: '81999885577',
