@@ -19,16 +19,16 @@ jobs:
       LOG_LEVEL: ${{ secrets.HOST }}
       APP_KEY: ${{ secrets.APP_KEY }}
       NODE_ENV: ${{ secrets.NODE_ENV }}
-      DB_HOST: localhost
-      DB_PORT: 3306
-      DB_USER: root
-      DB_PASSWORD: root
-      DB_DATABASE: my_database
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_DATABASE: ${{ secrets.DB_DATABASE }}
     steps:
       - uses: actions/checkout@v3
       - name: Build and push image
         run: |
-          docker login -u thiagotfsilva --password ${{ secrets.GHRC_TOKEN }} ghrc.io
+          docker login --username thiagotfsilva --password ${{ secrets.GITHUB_TOKEN }} ghrc.io
           docker build . --tag ${{ env.IMAGE_NAME }}
           docker push ${{ env.IMAGE_NAME }}
           docker run -d -p 3333:3333 --name app-container ${{ env.IMAGE_NAME }}
