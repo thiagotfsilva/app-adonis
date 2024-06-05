@@ -62,9 +62,17 @@ jobs:
 
       - name: Build Database
         run: docker compose up -d --build
+        env:
+          DB_HOST: db-app
 
-      - name: Wait for the container to be ready
-        run: sleep 10
+      - name: Wait for the database to be ready
+        run: |
+          echo "Waiting for the database to be ready..."
+          while ! docker exec db-app mysqladmin ping --host=${{ secrets.DB_HOST }} --port=${{ secrets.DB_PORT }} --user=${{ secrets.DB_USER }} --password=${{ secrets.DB_PASSWORD }} --silent &> /dev/null ; do
+            echo "Waiting for database connection..."
+            sleep 2
+          done
+          echo "Database is ready!"
 
       - name: Check container status
         run: docker ps -a
