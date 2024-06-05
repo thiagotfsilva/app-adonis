@@ -48,5 +48,14 @@ jobs:
       - name: Build Database
         run: docker compose up -d --build
 
-      - name: Run Migrations
+      - name: Wait for the container to be ready
+        run: sleep 10
+
+      - name: Check container status
+        run: docker ps -a
+
+      - name: Get container logs
+        run: docker logs app-container
+
+      - name: Run Tests
         run: docker exec app-container npm run test
