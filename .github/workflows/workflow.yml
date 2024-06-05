@@ -19,7 +19,7 @@ jobs:
       LOG_LEVEL: ${{ secrets.HOST }}
       APP_KEY: ${{ secrets.APP_KEY }}
       NODE_ENV: ${{ secrets.NODE_ENV }}
-      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_HOST: db-app
       DB_PORT: ${{ secrets.DB_PORT }}
       DB_USER: ${{ secrets.DB_USER }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
@@ -44,41 +44,10 @@ jobs:
 
       - name: Up Image
         run: |
-          docker run -d \
-            -p 3333:3333 \
-            --name app-container \
-            -e TZ=${{ secrets.TZ }} \
-            -e PORT=${{ secrets.PORT }} \
-            -e HOST=${{ secrets.HOST }} \
-            -e LOG_LEVEL=${{ secrets.LOG_LEVEL }} \
-            -e APP_KEY=${{ secrets.APP_KEY }} \
-            -e NODE_ENV=${{ secrets.NODE_ENV }} \
-            -e DB_HOST=${{ secrets.DB_HOST }} \
-            -e DB_PORT=${{ secrets.DB_PORT }} \
-            -e DB_USER=${{ secrets.DB_USER }} \
-            -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            -e DB_DATABASE=${{ secrets.DB_DATABASE }} \
-            ${{ env.IMAGE_NAME }}
+          docker run -d -p 3333:3333 --name app-container ${{ env.IMAGE_NAME }}
 
       - name: Build Database
         run: docker compose up -d --build
-        env:
-          DB_HOST: db-app
-
-      - name: Wait for the database to be ready
-        run: |
-          echo "Waiting for the database to be ready..."
-          while ! docker exec db-app mysqladmin ping --host=${{ secrets.DB_HOST }} --port=${{ secrets.DB_PORT }} --user=${{ secrets.DB_USER }} --password=${{ secrets.DB_PASSWORD }} --silent &> /dev/null ; do
-            echo "Waiting for database connection..."
-            sleep 2
-          done
-          echo "Database is ready!"
-
-      - name: Check container status
-        run: docker ps -a
-
-      - name: Get container logs
-        run: docker logs app-container
 
       - name: Run Tests
         run: docker exec app-container npm run test
