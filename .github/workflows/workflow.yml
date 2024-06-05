@@ -19,7 +19,7 @@ jobs:
       LOG_LEVEL: ${{ secrets.HOST }}
       APP_KEY: ${{ secrets.APP_KEY }}
       NODE_ENV: ${{ secrets.NODE_ENV }}
-      DB_HOST: db-app
+      DB_HOST: ${{ secrets.DB_HOST }}
       DB_PORT: ${{ secrets.DB_PORT }}
       DB_USER: ${{ secrets.DB_USER }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
@@ -54,7 +54,7 @@ jobs:
             -e LOG_LEVEL=${{ secrets.LOG_LEVEL }} \
             -e APP_KEY=${{ secrets.APP_KEY }} \
             -e NODE_ENV=${{ secrets.NODE_ENV }} \
-            -e DB_HOST=db-app \
+            -e DB_HOST=${{ secrets.DB_HOST }} \
             -e DB_PORT=${{ secrets.DB_PORT }} \
             -e DB_USER=${{ secrets.DB_USER }} \
             -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
