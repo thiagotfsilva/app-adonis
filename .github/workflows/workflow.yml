@@ -47,14 +47,13 @@ jobs:
           docker run -d \
             -p 3333:3333 \
             --name app-container \
-            --network mynetwork \
             -e TZ=${{ secrets.TZ }} \
             -e PORT=${{ secrets.PORT }} \
             -e HOST=${{ secrets.HOST }} \
             -e LOG_LEVEL=${{ secrets.LOG_LEVEL }} \
             -e APP_KEY=${{ secrets.APP_KEY }} \
             -e NODE_ENV=${{ secrets.NODE_ENV }} \
-            -e DB_HOST=${{ secrets.DB_HOST }} \
+            -e DB_HOST=${{ secrets.DB_HOST }}\
             -e DB_PORT=${{ secrets.DB_PORT }} \
             -e DB_USER=${{ secrets.DB_USER }} \
             -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
