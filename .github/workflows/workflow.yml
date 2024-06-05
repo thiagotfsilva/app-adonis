@@ -49,6 +49,4 @@ jobs:
         run: docker compose up -d --build
 
       - name: Run Migrations
-        run: |
-          docker exec -it app-container bash
-          npm run test
+        run: docker exec app-container npm run test
