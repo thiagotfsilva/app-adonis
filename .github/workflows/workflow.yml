@@ -64,4 +64,4 @@ jobs:
         run: docker compose up -d --build
 
       - name: Run Tests
-        run: docker exec app-container npm run test
+        run: docker exec api-app npm run test
