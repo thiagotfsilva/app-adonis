@@ -12,7 +12,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
-    "migrations": "node ace migration:run"
+    "migration": "node ace migration:run"
   },
   "imports": {
     "#controllers/*": "./app/controllers/*.js",

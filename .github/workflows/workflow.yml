@@ -38,7 +38,17 @@ jobs:
 
       - name: Build image api
         run: docker build -t ${{ env.IMAGE_NAME }} .
+
       - name: Publish image api
         run: docker push ${{ env.IMAGE_NAME }}
+
       - name: Up Image
         run: docker run -d -p 3333:3333 --name app-container ${{ env.IMAGE_NAME }}
+
+      - name: Build Database
+        run: docker compose up -d --build
+
+      - name: Run Migrations
+        run: |
+          docker exec -it app-container bash
+          npm run test
