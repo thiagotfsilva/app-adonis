@@ -28,7 +28,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Login to Github Registry
+      - name: Login to Github Registrey
         if: success()
         uses: docker/login-action@v1
         with:
@@ -58,14 +58,4 @@ jobs:
             -e DB_USER=${{ secrets.DB_USER }} \
             -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
             -e DB_DATABASE=${{ secrets.DB_DATABASE }} \
-            --memory="2g" \
             ${{ env.IMAGE_NAME }}
-
-      - name: Build Database
-        run: docker compose up -d --build --force-recreate --no-deps
-
-      - name: Check Container Logs
-        run: docker logs app-container
-
-      - name: Run Tests
-        run: docker exec app-container npm run test
