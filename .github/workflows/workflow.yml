@@ -30,9 +30,7 @@ jobs:
       - name: Build Database
         run: docker compose up -d --build
       - name: Run Tests
-        run: |
-          docker exec -it api-app bash
-          npm run test
+        run: docker exec api-app npm run test
 
   build_and_publish:
     runs-on: ubuntu-latest
