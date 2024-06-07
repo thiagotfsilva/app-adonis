@@ -29,8 +29,10 @@ jobs:
         uses: actions/checkout@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      - name: Build Enviroment
+      - name: Build Database
         run: docker compose up -d --build
+      - name: Install dependencies
+        run: docker exec api-app npm run install
       - name: Run Tests
         run: docker exec api-app npm run test
 
@@ -61,11 +63,9 @@ jobs:
           username: thiagotfsilva
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install Dependencies
-        run: docker exec api-app npm install
+      - name: Build image api
+        run: docker build -t ${{ env.IMAGE_NAME }} .
 
-      - name: Run Tests
-        run: docker exec api-app npm run test
       - name: Publish image api
         run: docker push ${{ env.IMAGE_NAME }}
 
