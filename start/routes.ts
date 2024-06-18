@@ -44,3 +44,7 @@ router
     // return AutoSwagger.default.rapidoc("/swagger", swagger); to use RapiDoc instead
   })
   .prefix('api/v1')
+
+router.get('/', async ({ view }) => {
+  return view.render('form_report')
+})
