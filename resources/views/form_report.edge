@@ -6,7 +6,7 @@
   <style>
     body {
       margin: 0;
-      padding: 16px
+      padding: 16px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       display: flex;
       height: 100vh;
@@ -15,7 +15,7 @@
 
     #container {
       display: flex;
-      justify-content: space-between
+      justify-content: space-between;
       width: 100%;
     }
 
@@ -74,7 +74,7 @@
 </head>
 <body>
   <div id="container">
-    <div class="rigth">
+    <div id="right">
       <form id="form" action="">
         <input id="name" type="text" placeholder="Nome" autocomplete="off" />
         <input id="description" type="text" placeholder="Descrição" autocomplete="off" />
@@ -83,7 +83,7 @@
         <button type="submit">Enviar</button>
       </form>
     </div>
-    <div class="left">
+    <div id="left">
       <ul id="messages"></ul>
     </div>
   </div>
@@ -119,12 +119,23 @@
 
     // Escutando o evento emitido pelo servidor
     socket.on('report', (msg) => {
-      console.log('message client', msg)
+      console.log('message client', msg);
       const item = document.createElement('li');
       item.textContent = `${msg.name} - ${msg.title}: ${msg.description} (${msg.date})`;
       messages.appendChild(item);
       window.scrollTo(0, document.body.scrollHeight);
     });
+
+    // Escutando o evento para receber todos os relatórios ao conectar
+    socket.on('reports', (reports) => {
+      messages.innerHTML = ''; // Limpando a lista
+      reports.forEach((report) => {
+        const item = document.createElement('li');
+        item.textContent = `${report.name} - ${report.title}: ${report.description} (${report.date})`;
+        messages.appendChild(item);
+      });
+    });
+
   </script>
 </body>
 </html>

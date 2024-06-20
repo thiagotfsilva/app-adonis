@@ -1,19 +1,25 @@
+import { ReportModel } from '#models/report'
 import app from '@adonisjs/core/services/app'
 import server from '@adonisjs/core/services/server'
 import { Server } from 'socket.io'
 
-app.ready(() => {
+app.ready(async () => {
   const io = new Server(server.getNodeServer()) // iniciando um servidor
 
   // evento: connection
-  io.on('connection', (socket) => {
+  io.on('connection', async (socket) => {
     console.log('socket connected', socket.id)
 
-    //escuta o evento report emitido pelo formulario
-    socket.on('report', (msg) => {
-      // salvar dados enviados aqui
-      console.log('message: ' + msg)
-      io.emit('report', msg) // emitindo evento
+    // Enviar todos os relatórios para o cliente ao conectar
+    const reports = await ReportModel.find()
+    socket.emit('reports', reports) // Emitindo evento para enviar todos os relatórios
+
+    // Escuta o evento report emitido pelo formulário
+    socket.on('report', async (msg) => {
+      // Salvar dados enviados aqui
+      await ReportModel.create(msg)
+      const newReports = await ReportModel.find()
+      io.emit('reports', newReports) // Emitindo evento para enviar todos os relatórios
     })
   })
 })
