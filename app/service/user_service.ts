@@ -1,13 +1,22 @@
 import User from '#models/user'
 import { inject } from '@adonisjs/core'
 import { UserRespository } from '../repositories/user_repository.js'
+import mail from '@adonisjs/mail/services/main'
 
 @inject()
 export class UserService {
   constructor(protected userRepository: UserRespository) {}
 
   async create(data: User) {
-    return await this.userRepository.create(data)
+    const user = await this.userRepository.create(data)
+    await mail.send((messages) => {
+      messages
+        .to(user.email)
+        .from('info@example.org')
+        .subject('Verify your email address')
+        .htmlView('welcome_email', { user })
+    })
+    return user
   }
 
   async fetch() {
