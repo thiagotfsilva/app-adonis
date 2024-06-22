@@ -12,7 +12,7 @@ export class UserService {
     await mail.send((messages) => {
       messages
         .to(user.email)
-        .from('info@example.org')
+        .from('thiagosilva@areopagus.tech')
         .subject('Verify your email address')
         .htmlView('welcome_email', { user })
     })
