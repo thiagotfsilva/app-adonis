@@ -13,6 +13,8 @@ import AutoSwagger from 'adonis-autoswagger'
 import swagger from '#config/swagger'
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+import AWS from 'aws-sdk'
+import env from './env.js'
 
 router.post('/login', [AuthController, 'login']).prefix('api/v1')
 router.post('/register', [UsersController, 'createUser']).prefix('api/v1/users')
@@ -48,3 +50,34 @@ router
 router.get('/', async ({ view }) => {
   return view.render('form_report')
 })
+
+router.get('/hello', async ({ response }) => {
+  return response.json({ message: 'Hello!' })
+})
+
+// aws-s3
+AWS.config.update({
+  accessKeyId: env.get('S3_KEY'),
+  secretAccessKey: env.get('S3_SECRET'),
+  region: env.get('S3_REGION'),
+})
+
+const s3 = new AWS.S3()
+
+const params: any = {
+  Bucket: env.get('S3_BUCKET'),
+  Key: '',
+  Body: '',
+}
+
+router
+  .post('/upload', ({ request, response }) => {
+    try {
+      const file = request.file('file_trein')
+      console.log(file?.tmpPath)
+      response.json({ message: 'uploado ok' })
+    } catch (error) {
+      throw new Error((error as Error).message)
+    }
+  })
+  .prefix('api/v1')
