@@ -15,6 +15,7 @@ import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 import AWS from 'aws-sdk'
 import env from './env.js'
+import { cuid } from '@adonisjs/core/helpers'
 
 router.post('/login', [AuthController, 'login']).prefix('api/v1')
 router.post('/register', [UsersController, 'createUser']).prefix('api/v1/users')
@@ -62,19 +63,18 @@ AWS.config.update({
   region: env.get('S3_REGION'),
 })
 
-const s3 = new AWS.S3()
-
-const params: any = {
-  Bucket: env.get('S3_BUCKET'),
-  Key: '',
-  Body: '',
-}
-
 router
-  .post('/upload', ({ request, response }) => {
+  .post('/upload', async ({ request, response }) => {
     try {
       const file = request.file('file_trein')
-      console.log(file?.tmpPath)
+      const s3 = new AWS.S3()
+
+      const params: any = {
+        Bucket: env.get('S3_BUCKET'),
+        Key: `${cuid() + file?.extname}`,
+        Body: file,
+      }
+      await s3.upload(params).promise()
       response.json({ message: 'uploado ok' })
     } catch (error) {
       throw new Error((error as Error).message)
