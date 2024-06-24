@@ -59,6 +59,7 @@
     "@benhepburn/adonis-mongoose": "^1.2.0",
     "@vinejs/vine": "^2.0.0",
     "adonis-autoswagger": "^3.43.0",
+    "aws-sdk": "^2.1646.0",
     "edge.js": "^6.0.2",
     "luxon": "^3.4.4",
     "mongoose": "^8.4.3",
