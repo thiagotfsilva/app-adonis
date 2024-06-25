@@ -16,6 +16,7 @@ import { middleware } from './kernel.js'
 import AWS from 'aws-sdk'
 import env from './env.js'
 import { cuid } from '@adonisjs/core/helpers'
+import fs from 'node:fs'
 
 router.post('/login', [AuthController, 'login']).prefix('api/v1')
 router.post('/register', [UsersController, 'createUser']).prefix('api/v1/users')
@@ -68,12 +69,16 @@ router
     try {
       const file = request.file('file_trein')
       const s3 = new AWS.S3()
+      const pathFile = file?.tmpPath
+      if (!pathFile) throw new Error()
+      const content = fs.readFileSync(pathFile)
 
       const params: any = {
         Bucket: env.get('S3_BUCKET'),
         Key: `${cuid() + file?.extname}`,
-        Body: file,
+        Body: content,
       }
+
       await s3.upload(params).promise()
       response.json({ message: 'uploado ok' })
     } catch (error) {
