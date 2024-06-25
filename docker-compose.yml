@@ -11,5 +11,13 @@ services:
       - db_data:/var/lib/mysql
     restart: unless-stopped
 
+  rabbitmq:
+    image: rabbitmq:3.10-rc-management-alpine
+    ports:
+      # AMQP protocol port
+      - '5672:5672'
+      # HTTP management UI
+      - '15672:15672'
+
 volumes:
   db_data:
