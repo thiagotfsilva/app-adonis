@@ -59,8 +59,8 @@ router.get('/hello', async ({ response }) => {
 
 // aws-s3
 AWS.config.update({
-  accessKeyId: env.get('S3_KEY'),
-  secretAccessKey: env.get('S3_SECRET'),
+  accessKeyId: env.get('AWS_ACCESS_KEY_ID'),
+  secretAccessKey: env.get('AWS_SECRET_ACCESS_KEY'),
   region: env.get('S3_REGION'),
 })
 
