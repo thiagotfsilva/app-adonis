@@ -17,6 +17,8 @@ import AWS from 'aws-sdk'
 import env from './env.js'
 import { cuid } from '@adonisjs/core/helpers'
 import fs from 'node:fs'
+import mail from '@adonisjs/mail/services/main'
+import { RabittMqConsumer } from '../consumer.js'
 
 router.post('/login', [AuthController, 'login']).prefix('api/v1')
 router.post('/register', [UsersController, 'createUser']).prefix('api/v1/users')
@@ -83,6 +85,30 @@ router
       response.json({ message: 'uploado ok' })
     } catch (error) {
       throw new Error((error as Error).message)
+    }
+  })
+  .prefix('api/v1')
+
+//rabittmq consumer
+
+router
+  .post('/queue', async ({ response }) => {
+    try {
+      const consumer = new RabittMqConsumer('amqp://guest:guest@localhost:5672')
+      await consumer.start()
+      await consumer.consume('email', async (message) => {
+        const email = message.content.toString()
+        await mail.send((messages) => {
+          messages
+            .to(email)
+            .from('thiagosilva@areopagus.tech')
+            .subject('Verify your email address')
+            .htmlView('welcome_email', email)
+        })
+      })
+      response.json({ message: 'ok' })
+    } catch (error) {
+      console.log((error as Error).message)
     }
   })
   .prefix('api/v1')
