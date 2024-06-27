@@ -13,6 +13,7 @@ env:
   APP_NAME: adonis-app
   REGISTRY: ghcr.io
   IMAGE_NAME: ghcr.io/thiagotfsilva/adonis-app:latest
+  DEPLOY_ENV: production
   TZ: ${{ secrets.TZ }}
   HOST: ${{ secrets.HOST }}
   LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
@@ -99,7 +100,7 @@ jobs:
               -e HOST="${{ secrets.HOST }}" \
               -e LOG_LEVEL="${{ secrets.LOG_LEVEL }}" \
               -e APP_KEY="${{ secrets.APP_KEY }}" \
-              -e NODE_ENV="${{ secrets.NODE_ENV }}" \
+              -e NODE_ENV="${{ env.DEPLOY_ENV }}" \
               -e DB_HOST="${{ secrets.DB_HOST }}" \
               -e DB_PORT="${{ secrets.DB_PORT }}" \
               -e DB_USER="${{ secrets.DB_USER }}" \
