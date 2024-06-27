@@ -8,6 +8,7 @@
   "emitDecoratorMetadata": true,
   "skipLibCheck": true,
   "compilerOptions": {
+    "strictPropertyInitialization": false,
     "rootDir": "./",
     "outDir": "./build"
   }

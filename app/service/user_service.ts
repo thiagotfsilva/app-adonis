@@ -1,7 +1,8 @@
 import User from '#models/user'
 import { inject } from '@adonisjs/core'
 import { UserRespository } from '../repositories/user_repository.js'
-import mail from '@adonisjs/mail/services/main'
+
+import { RabittMqServer } from './rabitt_mq_server.js'
 
 @inject()
 export class UserService {
@@ -9,13 +10,11 @@ export class UserService {
 
   async create(data: User) {
     const user = await this.userRepository.create(data)
-    await mail.send((messages) => {
-      messages
-        .to(user.email)
-        .from('thiagosilva@areopagus.tech')
-        .subject('Verify your email address')
-        .htmlView('welcome_email', { user })
-    })
+    const publisher = new RabittMqServer('amqp://guest:guest@localhost:5672')
+
+    await publisher.start()
+    await publisher.publishInQueue('email', user.email)
+
     return user
   }
 
