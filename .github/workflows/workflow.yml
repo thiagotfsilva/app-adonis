@@ -26,6 +26,12 @@ env:
   DB_DATABASE: ${{ secrets.DB_DATABASE }}
   SMTP_HOST: ${{ secrets.SMTP_HOST }}
   SMTP_PORT: ${{ secrets.SMTP_PORT }}
+  MONGODB_URI: ${{ secrets.MONGODB_URI }}
+  SES_REGION: ${{ secrets.SES_REGION }}
+  S3_REGION: ${{ secrets.S3_REGION }}
+  S3_BUCKET: ${{ secrets.S3_BUCKET }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
   tests_and_migrations:
