@@ -10,4 +10,8 @@ export class RabittMqServer {
     this.conn = await connect(this.uri)
     this.channel = await this.conn.createChannel()
   }
+
+  async publishInQueue(queue: string, message: string) {
+    return this.channel.sendToQueue(queue, Buffer.from(message))
+  }
 }
