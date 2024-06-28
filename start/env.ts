@@ -29,10 +29,6 @@ export default await Env.create(new URL('../', import.meta.url), {
   DB_PASSWORD: Env.schema.string.optional(),
   DB_DATABASE: Env.schema.string(),
 
-  S3_KEY: Env.schema.string(),
-  S3_SECRET: Env.schema.string(),
-  S3_REGION: Env.schema.string(),
-  S3_BUCKET: Env.schema.string(),
   /*
   |----------------------------------------------------------
   | Mongoose environment variables
@@ -50,9 +46,14 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   /*
   |----------------------------------------------------------
-  | Variables for configuring the mail package
+  | Variables for aws config
   |----------------------------------------------------------
   */
-  // AWS_ACCESS_KEY_ID: Env.schema.string(),
-  // AWS_SECRET_ACCESS_KEY: Env.schema.string(),
+  AWS_ACCESS_KEY_ID: Env.schema.string(),
+  AWS_SECRET_ACCESS_KEY: Env.schema.string(),
+
+  SES_REGION: Env.schema.string(),
+
+  S3_REGION: Env.schema.string(),
+  S3_BUCKET: Env.schema.string(),
 })

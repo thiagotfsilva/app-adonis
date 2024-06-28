@@ -7,10 +7,14 @@ on:
   pull_request:
     branches:
       - main
+
 env:
+  PORT: 3333
+  APP_NAME: adonis-app
+  REGISTRY: ghcr.io
   IMAGE_NAME: ghcr.io/thiagotfsilva/adonis-app:latest
+  DEPLOY_ENV: production
   TZ: ${{ secrets.TZ }}
-  PORT: ${{ secrets.PORT }}
   HOST: ${{ secrets.HOST }}
   LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
   APP_KEY: ${{ secrets.APP_KEY }}
@@ -20,6 +24,14 @@ env:
   DB_USER: ${{ secrets.DB_USER }}
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
   DB_DATABASE: ${{ secrets.DB_DATABASE }}
+  SMTP_HOST: ${{ secrets.SMTP_HOST }}
+  SMTP_PORT: ${{ secrets.SMTP_PORT }}
+  MONGODB_URI: ${{ secrets.MONGODB_URI }}
+  SES_REGION: ${{ secrets.SES_REGION }}
+  S3_REGION: ${{ secrets.S3_REGION }}
+  S3_BUCKET: ${{ secrets.S3_BUCKET }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
   tests_and_migrations:
@@ -30,18 +42,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
+
       - name: Build Database
         run: docker compose up -d --build
 
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
+
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
-      - run: npm install
+      - name: Installing Dependencies
+        run: npm install
+
       - run: npm run test
       - run: npm run migration
 
@@ -51,12 +68,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Login to Github Registrey
+      - name: Login to Github Registry
         if: success()
         uses: docker/login-action@v1
         with:
-          registry: ghcr.io
-          username: thiagotfsilva
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build image api
@@ -65,20 +82,42 @@ jobs:
       - name: Publish image api
         run: docker push ${{ env.IMAGE_NAME }}
 
-      - name: Up Image
-        run: |
-          docker run -d \
-            -p 3333:3333 \
-            --name app-container \
-            -e TZ=${{ secrets.TZ }} \
-            -e PORT=${{ secrets.PORT }} \
-            -e HOST=${{ secrets.HOST }} \
-            -e LOG_LEVEL=${{ secrets.LOG_LEVEL }} \
-            -e APP_KEY=${{ secrets.APP_KEY }} \
-            -e NODE_ENV=${{ secrets.NODE_ENV }} \
-            -e DB_HOST=${{ secrets.DB_HOST }}\
-            -e DB_PORT=${{ secrets.DB_PORT }} \
-            -e DB_USER=${{ secrets.DB_USER }} \
-            -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            -e DB_DATABASE=${{ secrets.DB_DATABASE }} \
-            ${{ env.IMAGE_NAME }}
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build_and_publish
+    steps:
+      - name: EC2 Deployment
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            sudo docker container stop ${{ env.APP_NAME }} || true
+            sudo docker container rm ${{ env.APP_NAME }} || true
+            echo "${{ secrets.GITHUB_TOKEN }}" | sudo docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
+            sudo docker pull ${{ env.IMAGE_NAME }}
+            sudo docker run -d \
+              --restart=unless-stopped \
+              -p ${{ env.PORT }}:${{ env.PORT }} \
+              --name ${{ env.APP_NAME }} \
+              -e TZ="${{ secrets.TZ }}" \
+              -e PORT="${{ secrets.PORT }}" \
+              -e HOST="${{ secrets.HOST }}" \
+              -e LOG_LEVEL="${{ secrets.LOG_LEVEL }}" \
+              -e APP_KEY="${{ secrets.APP_KEY }}" \
+              -e NODE_ENV="${{ env.DEPLOY_ENV }}" \
+              -e DB_HOST="${{ secrets.DB_HOST }}" \
+              -e DB_PORT="${{ secrets.DB_PORT }}" \
+              -e DB_USER="${{ secrets.DB_USER }}" \
+              -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+              -e DB_DATABASE="${{ secrets.DB_DATABASE }}" \
+              -e MONGODB_URI="${{ secrets.MONGODB_URI }}" \
+              -e SES_REGION="${{ secrets.SES_REGION }}" \
+              -e S3_REGION="${{ secrets.S3_REGION }}" \
+              -e S3_BUCKET="${{ secrets.S3_BUCKET }}" \
+              -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
+              -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+              -e SMTP_HOST="${{ secrets.SMTP_HOST }}" \
+              -e SMTP_PORT="${{ secrets.PORT }}" \
+              ${{ env.IMAGE_NAME }}

@@ -27,8 +27,8 @@ const mailConfig = defineConfig({
     ses: transports.ses({
       region: env.get('SES_REGION'),
       credentials: {
-        secretAccessKey: env.get('SES_ACCESS_SECRET')!,
-        accessKeyId: env.get('SES_ACCESS_KEY')!,
+        secretAccessKey: env.get('AWS_SECRET_ACCESS_KEY')!,
+        accessKeyId: env.get('AWS_ACCESS_KEY_ID')!,
       },
 
       //sslEnabled: true,
